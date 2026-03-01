@@ -1,0 +1,18 @@
+[Unit]
+Description=Curator Web Frontend
+After=curator.service
+
+[Container]
+Image=localhost/curator-web:latest
+ContainerName=curator-web
+Network=gpu-services
+PublishPort=3100:80
+HealthCmd=curl -f http://localhost/
+HealthInterval=30s
+
+[Service]
+Restart=always
+TimeoutStartSec=120
+
+[Install]
+WantedBy=default.target
