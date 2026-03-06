@@ -4,9 +4,7 @@ pipeline {
     environment {
         SONAR_HOST_URL    = 'http://127.0.0.1:9200'
         SONAR_PROJECT_KEY = 'curator-web'
-        TRIVY_CACHE_DIR   = '/opt/trivy/cache'
         DEPLOY_PLAYBOOK   = 'deploy/ansible-deploy.yml'
-        BUN_BIN           = '/home/eddie/.bun/bin/bun'
     }
 
     options {
@@ -16,19 +14,47 @@ pipeline {
 
     stages {
         stage('Trivy Security Scan') {
+            agent {
+                docker {
+                    image 'aquasec/trivy:latest'
+                    reuseNode true
+                    args '--entrypoint="" -u root --network host -v /opt/trivy/cache:/root/.cache/trivy'
+                }
+            }
             steps {
-                sh '/usr/bin/trivy fs --cache-dir "${TRIVY_CACHE_DIR}" --exit-code 1 --severity HIGH,CRITICAL --scanners vuln,secret --format table --skip-dirs node_modules --skip-dirs dist .'
+                sh '''trivy fs \
+                    --exit-code 1 \
+                    --severity HIGH,CRITICAL \
+                    --scanners vuln,secret \
+                    --format table \
+                    --skip-dirs node_modules \
+                    --skip-dirs dist \
+                    .'''
             }
         }
 
         stage('Build') {
+            agent {
+                docker {
+                    image 'oven/bun:1'
+                    reuseNode true
+                    args '-u root --network host'
+                }
+            }
             steps {
-                sh '"${BUN_BIN}" install --frozen-lockfile'
-                sh '"${BUN_BIN}" run build'
+                sh 'bun install --frozen-lockfile'
+                sh 'bun run build'
             }
         }
 
         stage('SonarQube Analysis') {
+            agent {
+                docker {
+                    image 'sonarsource/sonar-scanner-cli:latest'
+                    reuseNode true
+                    args '-u root --network host'
+                }
+            }
             steps {
                 withCredentials([string(credentialsId: 'sonarqube-token-curator-web', variable: 'SONAR_TOKEN')]) {
                     sh '''sonar-scanner \
@@ -43,14 +69,24 @@ pipeline {
 
         stage('Deploy') {
             steps {
-                sh 'ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook -i "127.0.0.1," "${DEPLOY_PLAYBOOK}" --connection local -e "curator_web_src_dir=${WORKSPACE}"'
+                sh '''ANSIBLE_HOST_KEY_CHECKING=False ansible-playbook \
+                    -i "127.0.0.1," \
+                    "${DEPLOY_PLAYBOOK}" \
+                    --connection local \
+                    -e "curator_web_src_dir=${WORKSPACE}"'''
             }
         }
     }
 
     post {
-        always { deleteDir() }
-        success { echo 'Pipeline completed successfully.' }
-        failure { echo 'Pipeline failed.' }
+        always {
+            deleteDir()
+        }
+        success {
+            echo 'Pipeline completed successfully.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
     }
 }
