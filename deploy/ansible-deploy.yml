@@ -1,7 +1,7 @@
 ---
-# Deploy curator-web to tela
+# Deploy curator-web to tela (rootless, user-level Quadlet)
 #
-# Usage (run on tela with local connection):
+# Usage (run on tela as eddie with local connection):
 #   ansible-playbook -i "127.0.0.1," deploy/ansible-deploy.yml \
 #     --connection local -e curator_web_src_dir=<path>
 #
@@ -11,15 +11,14 @@
 - name: Deploy curator-web
   hosts: all
   gather_facts: false
-  # No global become - podman build runs as the connected user (eddie)
 
   vars:
     service_name: curator-web
-    quadlet_dir: /etc/containers/systemd
+    quadlet_dir: /home/eddie/.config/containers/systemd
     curator_web_src_dir: "{{ ansible_env.HOME }}/curator-web"
 
   tasks:
-    - name: Build container image from source (as eddie)
+    - name: Build container image from source
       ansible.builtin.command:
         cmd: >
           podman build
@@ -29,28 +28,26 @@
         chdir: "{{ curator_web_src_dir }}"
       changed_when: true
 
-    - name: Copy quadlet container unit file (root)
+    - name: Copy quadlet container unit file
       ansible.builtin.copy:
         src: "{{ curator_web_src_dir }}/deploy/curator-web.container"
-        dest: "{{ quadlet_dir }}/{{ service_name }}.container"
+        dest: "{{ quadlet_dir }}/curator-web.container"
         remote_src: true
-        owner: root
-        group: root
         mode: "0644"
-      become: true
-      notify: Reload and restart service
+      notify: Reload and restart curator-web
 
   handlers:
-    - name: Reload and restart service
-      block:
-        - name: Reload systemd daemon
-          ansible.builtin.systemd:
-            daemon_reload: true
-          become: true
+    - name: Reload user systemd daemon
+      ansible.builtin.command:
+        cmd: systemctl --user daemon-reload
+      environment:
+        XDG_RUNTIME_DIR: /run/user/1001
+      listen: Reload and restart curator-web
 
-        - name: Restart curator-web service
-          ansible.builtin.systemd:
-            name: "{{ service_name }}"
-            state: restarted
-            enabled: true
-          become: true
+    - name: Restart curator-web service
+      ansible.builtin.command:
+        cmd: systemctl --user restart curator-web
+      environment:
+        XDG_RUNTIME_DIR: /run/user/1001
+      changed_when: true
+      listen: Reload and restart curator-web
