@@ -24,6 +24,7 @@ const STATUS_ICONS: Record<IngestionStatus, React.ReactNode> = {
   completed: <CheckCircle className="h-4 w-4 text-green-600" />,
   failed: <AlertTriangle className="h-4 w-4 text-red-600" />,
   in_progress: <Clock className="h-4 w-4 text-blue-600" />,
+  processing: <Clock className="h-4 w-4 text-blue-600 animate-pulse" />,
   pending: <Circle className="h-4 w-4 text-gray-400" />,
 }
 
@@ -32,6 +33,7 @@ const STATUS_VARIANTS: Record<IngestionStatus, "default" | "destructive" | "seco
   completed: "default",
   failed: "destructive",
   in_progress: "default",
+  processing: "default",
   pending: "secondary",
 }
 

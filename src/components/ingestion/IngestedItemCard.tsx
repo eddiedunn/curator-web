@@ -55,6 +55,7 @@ const STATUS_ICONS: Record<IngestionStatus, React.ReactNode> = {
   completed: <CheckCircle className="h-5 w-5 text-green-600" />,
   failed: <AlertTriangle className="h-5 w-5 text-destructive" />,
   in_progress: <Clock className="h-5 w-5 text-blue-600 animate-pulse" />,
+  processing: <Clock className="h-5 w-5 text-blue-600 animate-pulse" />,
   pending: <Circle className="h-5 w-5 text-muted-foreground" />,
 }
 
@@ -63,6 +64,7 @@ const STATUS_TEXT: Record<IngestionStatus, string> = {
   completed: "✓ Completed",
   failed: "⚠ Failed",
   in_progress: "⏳ In Progress",
+  processing: "⏳ Processing",
   pending: "○ Pending",
 }
 

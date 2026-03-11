@@ -24,6 +24,7 @@ export interface JobTrackerProps {
 const STATUS_VARIANTS: Record<IngestionStatus, "default" | "secondary" | "destructive" | "outline"> = {
   pending: "secondary",
   in_progress: "default",
+  processing: "default",
   completed: "default",
   failed: "destructive",
 }
@@ -32,6 +33,7 @@ const STATUS_VARIANTS: Record<IngestionStatus, "default" | "secondary" | "destru
 const STATUS_TEXT: Record<IngestionStatus, string> = {
   pending: "Pending",
   in_progress: "Processing",
+  processing: "Processing",
   completed: "Completed",
   failed: "Failed",
 }
