@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useSystemStatus } from "@/hooks/useSystemStatus"
+import { useIngestedItems } from "@/hooks/useIngestedItems"
 import type { IngestionStatus } from "@/api/types"
 
 export interface IngestionStatsProps {
@@ -11,13 +12,14 @@ export interface IngestionStatsProps {
 
 export function IngestionStats({ onStatClick }: IngestionStatsProps) {
   const { data: status, isLoading } = useSystemStatus()
+  const { data: items = [] } = useIngestedItems({ limit: 10000 })
 
-  // Use per-status counts from status API for accurate counts
-  const totalCount = status?.total_items ?? 0
-  const completedCount = status?.completed_items ?? 0
-  const failedCount = status?.failed_items ?? 0
-  const inProgressCount = status?.processing_items ?? 0
-  const pendingCount = status?.pending_items ?? 0
+  // Total from status API (authoritative); breakdown counted from full item list
+  const totalCount = status?.total_items ?? items.length
+  const completedCount = items.filter((item) => item.status === "completed").length
+  const failedCount = items.filter((item) => item.status === "failed").length
+  const inProgressCount = items.filter((item) => item.status === "in_progress").length
+  const pendingCount = items.filter((item) => item.status === "pending").length
 
   // Calculate percentages
   const completedPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0
