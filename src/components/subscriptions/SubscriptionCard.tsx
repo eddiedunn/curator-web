@@ -70,6 +70,7 @@ export function SubscriptionCard({
       try {
         const items = await curatorClient.listIngestedItems({
           subscription_id: subscription.id,
+          limit: 10000,
         })
         setItemCount(items.length)
       } catch (error) {
