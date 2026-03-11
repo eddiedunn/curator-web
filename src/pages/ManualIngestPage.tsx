@@ -290,7 +290,7 @@ export function ManualIngestPage() {
                       className="p-4 hover:bg-slate-50 transition-colors cursor-pointer"
                       onClick={() => {
                         if (job.status === "completed") {
-                          window.location.href = `/ingestion?search=${encodeURIComponent(job.source_url)}`
+                          window.location.href = `/ingested?search=${encodeURIComponent(job.source_url)}`
                         }
                       }}
                     >

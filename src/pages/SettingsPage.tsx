@@ -159,8 +159,12 @@ export function SettingsPage() {
 
                 <div className="space-y-1">
                   <p className="text-sm font-medium text-slate-600">Check Interval</p>
-                  <p className="text-lg font-semibold">30 seconds</p>
-                  <p className="text-xs text-slate-500">Default interval</p>
+                  <p className="text-lg font-semibold">
+                    {status?.check_interval_seconds != null
+                      ? `${status.check_interval_seconds} seconds`
+                      : "N/A"}
+                  </p>
+                  <p className="text-xs text-slate-500">Subscription check interval</p>
                 </div>
 
                 <div className="space-y-1">
@@ -403,7 +407,7 @@ export function SettingsPage() {
                 <Button
                   variant="outline"
                   className="gap-2"
-                  onClick={() => window.open('https://github.com/yourusername/curator', '_blank')}
+                  onClick={() => window.open('https://github.com/eddiedunn/curator', '_blank')}
                 >
                   <Github className="h-4 w-4" />
                   GitHub Repository

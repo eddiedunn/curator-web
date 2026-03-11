@@ -20,7 +20,7 @@ export type SubscriptionStatus = 'active' | 'paused' | 'error'
 /**
  * Status of an ingestion job
  */
-export type IngestionStatus = 'pending' | 'in_progress' | 'completed' | 'failed'
+export type IngestionStatus = 'pending' | 'in_progress' | 'processing' | 'completed' | 'failed'
 
 /** Subscription type constants */
 export const SUBSCRIPTION_TYPES = {
@@ -40,6 +40,7 @@ export const SUBSCRIPTION_STATUSES = {
 export const INGESTION_STATUSES = {
   PENDING: 'pending' as const,
   IN_PROGRESS: 'in_progress' as const,
+  PROCESSING: 'processing' as const,
   COMPLETED: 'completed' as const,
   FAILED: 'failed' as const,
 }
@@ -239,6 +240,21 @@ export interface StatusResponse {
 
   /** Total number of ingested items */
   total_items: number
+
+  /** Number of ingested items with 'completed' status */
+  completed_items: number
+
+  /** Number of ingested items with 'failed' status */
+  failed_items: number
+
+  /** Number of ingested items with 'pending' status */
+  pending_items: number
+
+  /** Number of ingested items with 'processing' status */
+  processing_items: number
+
+  /** Daemon check interval in seconds */
+  check_interval_seconds: number
 }
 
 /**

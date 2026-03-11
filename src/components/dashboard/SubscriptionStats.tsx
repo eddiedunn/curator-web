@@ -15,7 +15,7 @@ export function SubscriptionStats({ onStatClick }: SubscriptionStatsProps) {
   // Calculate stats
   const totalCount = subscriptions.length
   const activeCount = subscriptions.filter((sub) => sub.status === "active").length
-  const pausedCount = subscriptions.filter((sub) => !sub.enabled).length
+  const pausedCount = subscriptions.filter((sub) => sub.status === "paused").length
   const errorCount = subscriptions.filter((sub) => sub.status === "error").length
 
   // Calculate percentages
