@@ -96,6 +96,7 @@ export function SubscriptionsPage() {
           try {
             const items = await curatorClient.listIngestedItems({
               subscription_id: sub.id,
+              limit: 10000,
             })
             counts[sub.id] = items.length
           } catch (error) {
