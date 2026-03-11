@@ -2,6 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { useIngestedItems } from "@/hooks/useIngestedItems"
+import { useSystemStatus } from "@/hooks/useSystemStatus"
 import type { IngestionStatus } from "@/api/types"
 
 export interface IngestionStatsProps {
@@ -11,9 +12,10 @@ export interface IngestionStatsProps {
 
 export function IngestionStats({ onStatClick }: IngestionStatsProps) {
   const { data: items = [], isLoading } = useIngestedItems()
+  const { data: status } = useSystemStatus()
 
-  // Calculate stats
-  const totalCount = items.length
+  // Use total_items from status API for accurate count (items list is paginated)
+  const totalCount = status?.total_items ?? items.length
   const completedCount = items.filter((item) => item.status === "completed").length
   const failedCount = items.filter((item) => item.status === "failed").length
   const inProgressCount = items.filter((item) => item.status === "in_progress").length
