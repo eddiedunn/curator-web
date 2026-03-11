@@ -83,7 +83,7 @@ export function IngestionStats({ onStatClick }: IngestionStatsProps) {
                 onClick={() => onStatClick?.("pending")}
                 className="text-center p-3 rounded-lg hover:bg-accent transition-colors cursor-pointer"
               >
-                <div className="text-2xl font-bold text-gray-500">{pendingCount}</div>
+                <div className="text-2xl font-bold text-muted-foreground">{pendingCount}</div>
                 <Badge variant="secondary" className="mt-2">
                   Pending
                 </Badge>
@@ -102,7 +102,7 @@ export function IngestionStats({ onStatClick }: IngestionStatsProps) {
                     {completedCount} ({completedPercent.toFixed(0)}%)
                   </span>
                 </div>
-                <Progress value={completedPercent} className="h-2 bg-gray-200">
+                <Progress value={completedPercent} className="h-2 bg-muted">
                   <div
                     className="h-full bg-green-600 transition-all"
                     style={{ width: `${completedPercent}%` }}
@@ -118,7 +118,7 @@ export function IngestionStats({ onStatClick }: IngestionStatsProps) {
                     {failedCount} ({failedPercent.toFixed(0)}%)
                   </span>
                 </div>
-                <Progress value={failedPercent} className="h-2 bg-gray-200">
+                <Progress value={failedPercent} className="h-2 bg-muted">
                   <div
                     className="h-full bg-red-600 transition-all"
                     style={{ width: `${failedPercent}%` }}
@@ -134,7 +134,7 @@ export function IngestionStats({ onStatClick }: IngestionStatsProps) {
                     {inProgressCount} ({inProgressPercent.toFixed(0)}%)
                   </span>
                 </div>
-                <Progress value={inProgressPercent} className="h-2 bg-gray-200">
+                <Progress value={inProgressPercent} className="h-2 bg-muted">
                   <div
                     className="h-full bg-blue-600 transition-all"
                     style={{ width: `${inProgressPercent}%` }}
@@ -145,14 +145,14 @@ export function IngestionStats({ onStatClick }: IngestionStatsProps) {
               {/* Pending Progress */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-gray-600 font-medium">Pending</span>
+                  <span className="text-muted-foreground font-medium">Pending</span>
                   <span className="text-muted-foreground">
                     {pendingCount} ({pendingPercent.toFixed(0)}%)
                   </span>
                 </div>
-                <Progress value={pendingPercent} className="h-2 bg-gray-200">
+                <Progress value={pendingPercent} className="h-2 bg-muted">
                   <div
-                    className="h-full bg-gray-500 transition-all"
+                    className="h-full bg-muted-foreground transition-all"
                     style={{ width: `${pendingPercent}%` }}
                   />
                 </Progress>

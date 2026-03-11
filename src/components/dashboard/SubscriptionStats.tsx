@@ -57,7 +57,7 @@ export function SubscriptionStats({ onStatClick }: SubscriptionStatsProps) {
                 onClick={() => onStatClick?.()}
                 className="text-center p-3 rounded-lg hover:bg-accent transition-colors cursor-pointer"
               >
-                <div className="text-2xl font-bold text-gray-500">{pausedCount}</div>
+                <div className="text-2xl font-bold text-muted-foreground">{pausedCount}</div>
                 <Badge variant="secondary" className="mt-2">
                   Paused
                 </Badge>
@@ -87,7 +87,7 @@ export function SubscriptionStats({ onStatClick }: SubscriptionStatsProps) {
                     {activeCount} ({activePercent.toFixed(0)}%)
                   </span>
                 </div>
-                <Progress value={activePercent} className="h-2 bg-gray-200">
+                <Progress value={activePercent} className="h-2 bg-muted">
                   <div
                     className="h-full bg-green-600 transition-all"
                     style={{ width: `${activePercent}%` }}
@@ -98,14 +98,14 @@ export function SubscriptionStats({ onStatClick }: SubscriptionStatsProps) {
               {/* Paused Progress */}
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-gray-600 font-medium">Paused</span>
+                  <span className="text-muted-foreground font-medium">Paused</span>
                   <span className="text-muted-foreground">
                     {pausedCount} ({pausedPercent.toFixed(0)}%)
                   </span>
                 </div>
-                <Progress value={pausedPercent} className="h-2 bg-gray-200">
+                <Progress value={pausedPercent} className="h-2 bg-muted">
                   <div
-                    className="h-full bg-gray-500 transition-all"
+                    className="h-full bg-muted-foreground transition-all"
                     style={{ width: `${pausedPercent}%` }}
                   />
                 </Progress>
@@ -119,7 +119,7 @@ export function SubscriptionStats({ onStatClick }: SubscriptionStatsProps) {
                     {errorCount} ({errorPercent.toFixed(0)}%)
                   </span>
                 </div>
-                <Progress value={errorPercent} className="h-2 bg-gray-200">
+                <Progress value={errorPercent} className="h-2 bg-muted">
                   <div
                     className="h-full bg-red-600 transition-all"
                     style={{ width: `${errorPercent}%` }}
