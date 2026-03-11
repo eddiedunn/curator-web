@@ -12,6 +12,9 @@ import {
   Trash2,
   ChevronDown,
   ChevronUp,
+  Youtube,
+  Rss,
+  Podcast,
 } from "lucide-react"
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
@@ -36,23 +39,29 @@ import { formatRelativeTime, truncateUrl } from "@/lib/utils"
 import type { SubscriptionResponse, SubscriptionType } from "@/api/types"
 import { useUpdateSubscription, useDeleteSubscription } from "@/hooks/useSubscriptions"
 import { curatorClient } from "@/api/client"
+import { cn } from "@/lib/utils"
 
 export interface SubscriptionCardProps {
   subscription: SubscriptionResponse
-  onEdit?: (id: string) => void
   onDelete?: (id: string) => void
 }
 
-// Icon mapping for subscription types
-const TYPE_ICONS: Record<SubscriptionType, string> = {
-  youtube_channel: "📺",
-  rss_feed: "📰",
-  podcast: "🎙️",
+// Icon + color mapping for subscription types
+const TYPE_CONFIG: Record<SubscriptionType, { icon: typeof Youtube; color: string }> = {
+  youtube_channel: { icon: Youtube, color: "text-red-500 bg-red-500/10" },
+  rss_feed: { icon: Rss, color: "text-orange-500 bg-orange-500/10" },
+  podcast: { icon: Podcast, color: "text-purple-500 bg-purple-500/10" },
+}
+
+// Status border colors
+const STATUS_BORDER: Record<string, string> = {
+  active: "border-l-green-500",
+  error: "border-l-red-500",
+  paused: "border-l-gray-400",
 }
 
 export function SubscriptionCard({
   subscription,
-  onEdit,
   onDelete,
 }: SubscriptionCardProps) {
   const [copied, setCopied] = React.useState(false)
@@ -64,7 +73,6 @@ export function SubscriptionCard({
   const updateSubscription = useUpdateSubscription()
   const deleteSubscription = useDeleteSubscription()
 
-  // Fetch item count for this subscription
   React.useEffect(() => {
     const fetchItemCount = async () => {
       try {
@@ -82,7 +90,6 @@ export function SubscriptionCard({
     fetchItemCount()
   }, [subscription.id])
 
-  // Copy URL to clipboard
   const handleCopyUrl = async () => {
     try {
       await navigator.clipboard.writeText(subscription.source_url)
@@ -93,7 +100,6 @@ export function SubscriptionCard({
     }
   }
 
-  // Toggle pause/resume
   const handleTogglePause = async () => {
     try {
       await updateSubscription.mutateAsync({
@@ -105,16 +111,13 @@ export function SubscriptionCard({
     }
   }
 
-  // Retry now (force immediate check)
   const handleRetryNow = async () => {
     setIsRetrying(true)
     try {
-      // Trigger a fetch job for this subscription
       await curatorClient.triggerFetch({
         source_url: subscription.source_url,
         subscription_id: subscription.id,
       })
-      // You might want to show a success message here
     } catch (error) {
       console.error("Failed to retry subscription:", error)
     } finally {
@@ -122,7 +125,6 @@ export function SubscriptionCard({
     }
   }
 
-  // Delete subscription
   const handleDelete = async () => {
     try {
       await deleteSubscription.mutateAsync(subscription.id)
@@ -133,31 +135,36 @@ export function SubscriptionCard({
     }
   }
 
-  const typeIcon = TYPE_ICONS[subscription.subscription_type] || "📄"
+  const typeConfig = TYPE_CONFIG[subscription.subscription_type] || { icon: Rss, color: "text-muted-foreground bg-muted" }
+  const TypeIcon = typeConfig.icon
+  const borderClass = STATUS_BORDER[subscription.status] || "border-l-gray-400"
 
   return (
     <>
-      <Card className="hover:shadow-md transition-shadow">
+      <Card className={cn("hover:shadow-md transition-shadow border-l-4", borderClass)}>
         <CardHeader className="pb-3 p-4 sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3 flex-1 min-w-0">
               {/* Type Icon */}
-              <span className="text-2xl sm:text-3xl flex-shrink-0" role="img" aria-label={subscription.subscription_type}>
-                {typeIcon}
-              </span>
+              <div className={cn("flex-shrink-0 rounded-full p-2", typeConfig.color)}>
+                <TypeIcon className="h-5 w-5" />
+              </div>
 
               {/* Name and Status */}
               <div className="flex-1 min-w-0">
-                <h3 className="text-base sm:text-lg font-bold truncate">
+                <Link
+                  to={`/subscriptions/${subscription.id}`}
+                  className="text-base sm:text-lg font-bold truncate block hover:underline"
+                >
                   {subscription.name}
-                </h3>
+                </Link>
                 <div className="mt-1">
                   <StatusBadge status={subscription.status} />
                 </div>
               </div>
             </div>
 
-            {/* Actions Dropdown - Touch-friendly */}
+            {/* Actions Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="flex-shrink-0 min-h-[44px] min-w-[44px]">
@@ -168,19 +175,30 @@ export function SubscriptionCard({
               <DropdownMenuContent align="end">
                 <DropdownMenuItem asChild>
                   <Link
+                    to={`/subscriptions/${subscription.id}`}
+                    className="flex items-center cursor-pointer"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    View Details
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
+                    to={`/subscriptions/${subscription.id}/edit`}
+                    className="flex items-center cursor-pointer"
+                  >
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link
                     to={`/ingested?subscription=${subscription.id}`}
                     className="flex items-center cursor-pointer"
                   >
                     <ExternalLink className="mr-2 h-4 w-4" />
                     View Items
                   </Link>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={() => onEdit?.(subscription.id)}
-                  disabled={!onEdit}
-                >
-                  <Edit className="mr-2 h-4 w-4" />
-                  Edit
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleTogglePause}
@@ -296,7 +314,7 @@ export function SubscriptionCard({
           <DialogHeader>
             <DialogTitle>Delete Subscription</DialogTitle>
             <DialogDescription>
-              Are you sure you want to delete "{subscription.name}"? This action
+              Are you sure you want to delete &quot;{subscription.name}&quot;? This action
               cannot be undone and will remove all associated data.
             </DialogDescription>
           </DialogHeader>

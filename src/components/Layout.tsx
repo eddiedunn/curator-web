@@ -1,22 +1,25 @@
-import { Outlet } from 'react-router-dom'
-import { Header } from './layout/Header'
+import { Outlet } from "react-router-dom"
+import { PanelLeft } from "lucide-react"
+import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "./layout/AppSidebar"
 
 export function Layout() {
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
-      <Header />
-      <main className="flex-1">
-        <Outlet />
-      </main>
-      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700">
-        <div className="container mx-auto px-4 py-4 text-center text-slate-600 dark:text-slate-400 text-sm">
-          <div className="flex items-center justify-center space-x-4">
-            <p>&copy; 2024 Curator. All rights reserved.</p>
-            <span>•</span>
-            <p>v1.0.0</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        {/* Mobile top bar with sidebar trigger */}
+        <header className="flex h-12 items-center gap-2 border-b border-border px-4 lg:hidden">
+          <SidebarTrigger>
+            <PanelLeft className="h-5 w-5" />
+          </SidebarTrigger>
+          <span className="text-sm font-semibold">Curator</span>
+        </header>
+
+        <main className="flex-1 p-4 sm:p-6 lg:p-8">
+          <Outlet />
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   )
 }

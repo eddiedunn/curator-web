@@ -19,33 +19,18 @@ import { useManualFetch, useRecentJobs } from "@/hooks/useManualFetch"
 import { useSubscriptions } from "@/hooks/useSubscriptions"
 import type { FetchJobResponse } from "@/api/types"
 
-/**
- * ManualIngestPage component
- *
- * Provides a UI for manually triggering content ingestion from URLs.
- * Features:
- * - URL input with validation
- * - Optional subscription linking
- * - Active jobs tracking with auto-refresh
- * - Recent jobs history
- * - Toast notifications for success/failure
- */
 export function ManualIngestPage() {
-  // Form state
   const [url, setUrl] = React.useState("")
   const [subscriptionId, setSubscriptionId] = React.useState<string>("none")
   const [urlError, setUrlError] = React.useState<string>("")
 
-  // Hooks
   const { mutate: triggerFetch, isPending, activeJobIds, removeActiveJob } = useManualFetch()
   const { data: subscriptions = [] } = useSubscriptions()
   const { data: recentJobs = [] } = useRecentJobs()
 
-  // Ref for auto-scrolling to new jobs
   const activeJobsRef = React.useRef<HTMLDivElement>(null)
   const lastJobCountRef = React.useRef(activeJobIds.length)
 
-  // Auto-scroll to new job when created
   React.useEffect(() => {
     if (activeJobIds.length > lastJobCountRef.current && activeJobsRef.current) {
       activeJobsRef.current.scrollIntoView({ behavior: "smooth", block: "nearest" })
@@ -53,9 +38,6 @@ export function ManualIngestPage() {
     lastJobCountRef.current = activeJobIds.length
   }, [activeJobIds.length])
 
-  /**
-   * Validate URL format
-   */
   const validateUrl = (urlString: string): boolean => {
     if (!urlString.trim()) {
       setUrlError("URL is required")
@@ -76,9 +58,6 @@ export function ManualIngestPage() {
     }
   }
 
-  /**
-   * Handle form submission
-   */
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -90,7 +69,6 @@ export function ManualIngestPage() {
       source_url: url.trim(),
     }
 
-    // Add subscription_id if selected
     if (subscriptionId !== "none") {
       requestData.subscription_id = subscriptionId
     }
@@ -100,7 +78,6 @@ export function ManualIngestPage() {
         toast.success("Job started successfully", {
           description: `Ingesting content from ${new URL(url.trim()).hostname}`,
         })
-        // Clear form
         setUrl("")
         setSubscriptionId("none")
         setUrlError("")
@@ -113,9 +90,6 @@ export function ManualIngestPage() {
     })
   }
 
-  /**
-   * Handle job completion
-   */
   const handleJobComplete = (job: FetchJobResponse) => {
     if (job.status === "completed") {
       toast.success("Job completed", {
@@ -127,22 +101,15 @@ export function ManualIngestPage() {
       })
     }
 
-    // Remove from active jobs after a delay to let user see the completion
     setTimeout(() => {
       removeActiveJob(job.job_id)
     }, 2000)
   }
 
-  /**
-   * Handle job dismissal
-   */
   const handleJobDismiss = (jobId: string) => {
     removeActiveJob(jobId)
   }
 
-  /**
-   * Format timestamp for display
-   */
   const formatTimestamp = (timestamp: number): string => {
     const date = new Date(timestamp)
     const now = new Date()
@@ -160,15 +127,15 @@ export function ManualIngestPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="max-w-4xl space-y-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Manual Ingest</h1>
-          <p className="text-slate-600 mt-1">Manually ingest content from URLs</p>
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Manual Ingest</h1>
+          <p className="text-muted-foreground mt-1">Manually ingest content from URLs</p>
         </div>
 
         {/* Form Section */}
-        <Card className="mb-8">
+        <Card>
           <CardHeader>
             <CardTitle>Ingest Content</CardTitle>
             <CardDescription>
@@ -177,7 +144,6 @@ export function ManualIngestPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {/* URL Input */}
               <div className="space-y-2">
                 <Label htmlFor="url">URL</Label>
                 <Input
@@ -199,7 +165,6 @@ export function ManualIngestPage() {
                 )}
               </div>
 
-              {/* Subscription Dropdown */}
               <div className="space-y-2">
                 <Label htmlFor="subscription">Link to Subscription (Optional)</Label>
                 <Select
@@ -221,7 +186,6 @@ export function ManualIngestPage() {
                 </Select>
               </div>
 
-              {/* Help Text */}
               <Alert>
                 <Info className="h-4 w-4" />
                 <AlertDescription>
@@ -230,7 +194,6 @@ export function ManualIngestPage() {
                 </AlertDescription>
               </Alert>
 
-              {/* Submit Button */}
               <Button type="submit" disabled={isPending} className="w-full">
                 {isPending ? (
                   <>
@@ -249,8 +212,8 @@ export function ManualIngestPage() {
         </Card>
 
         {/* Active Jobs Section */}
-        <div className="mb-8" ref={activeJobsRef}>
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">Active Jobs</h2>
+        <div ref={activeJobsRef}>
+          <h2 className="text-xl font-semibold text-foreground mb-4">Active Jobs</h2>
           {activeJobIds.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -273,7 +236,7 @@ export function ManualIngestPage() {
 
         {/* Recent Jobs Section */}
         <div>
-          <h2 className="text-xl font-semibold text-slate-900 mb-4">Recent Jobs</h2>
+          <h2 className="text-xl font-semibold text-foreground mb-4">Recent Jobs</h2>
           {recentJobs.length === 0 ? (
             <Card>
               <CardContent className="py-8 text-center text-muted-foreground">
@@ -283,11 +246,11 @@ export function ManualIngestPage() {
           ) : (
             <Card>
               <CardContent className="p-0">
-                <div className="divide-y">
+                <div className="divide-y divide-border">
                   {recentJobs.slice(0, 10).map((job) => (
                     <div
                       key={job.job_id}
-                      className="p-4 hover:bg-slate-50 transition-colors cursor-pointer"
+                      className="p-4 hover:bg-muted transition-colors cursor-pointer"
                       onClick={() => {
                         if (job.status === "completed") {
                           window.location.href = `/ingested?search=${encodeURIComponent(job.source_url)}`
@@ -296,19 +259,19 @@ export function ManualIngestPage() {
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
-                          <div className="text-sm font-medium text-slate-900 truncate">
+                          <div className="text-sm font-medium text-foreground truncate">
                             {job.source_url}
                           </div>
                           <div className="flex items-center gap-2 mt-1">
                             <span
                               className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
                                 job.status === "completed"
-                                  ? "bg-green-100 text-green-800"
+                                  ? "bg-green-500/10 text-green-600"
                                   : job.status === "failed"
-                                  ? "bg-red-100 text-red-800"
+                                  ? "bg-red-500/10 text-red-600"
                                   : job.status === "in_progress"
-                                  ? "bg-blue-100 text-blue-800"
-                                  : "bg-gray-100 text-gray-800"
+                                  ? "bg-blue-500/10 text-blue-600"
+                                  : "bg-muted text-muted-foreground"
                               }`}
                             >
                               {job.status.replace("_", " ")}
@@ -319,8 +282,8 @@ export function ManualIngestPage() {
                           </div>
                         </div>
                         {job.status === "completed" && (
-                          <div className="text-xs text-blue-600 hover:text-blue-800">
-                            View →
+                          <div className="text-xs text-blue-600">
+                            View &rarr;
                           </div>
                         )}
                       </div>

@@ -24,7 +24,6 @@ export function SettingsPage() {
   const [isTriggeringCheck, setIsTriggeringCheck] = React.useState(false)
   const [isSchemaDialogOpen, setIsSchemaDialogOpen] = React.useState(false)
 
-  // Format uptime into human-readable format
   const formatUptime = (seconds?: number) => {
     if (!seconds) return "N/A"
     const days = Math.floor(seconds / 86400)
@@ -36,7 +35,6 @@ export function SettingsPage() {
     return `${minutes}m`
   }
 
-  // Get health badge variant
   const getHealthBadge = (isHealthy?: boolean) => {
     if (isHealthy === undefined) {
       return <Badge variant="outline">Unknown</Badge>
@@ -54,7 +52,6 @@ export function SettingsPage() {
     )
   }
 
-  // Test connections to all endpoints
   const handleTestConnections = async () => {
     setIsTestingConnections(true)
     try {
@@ -63,32 +60,27 @@ export function SettingsPage() {
         refetchStatus(),
       ])
       toast.success("All connections tested successfully")
-    } catch (error) {
+    } catch {
       toast.error("Failed to test connections")
     } finally {
       setIsTestingConnections(false)
     }
   }
 
-  // Trigger immediate subscription check (simulated - would need API endpoint)
   const handleTriggerCheck = async () => {
     setIsTriggeringCheck(true)
     try {
-      // This would call a real API endpoint to trigger subscription checks
-      // For now, we'll just refresh the status
       await refetchStatus()
       toast.success("Subscription check triggered successfully")
-    } catch (error) {
+    } catch {
       toast.error("Failed to trigger subscription check")
     } finally {
       setIsTriggeringCheck(false)
     }
   }
 
-  // Export database backup (simulated - would need API endpoint)
   const handleExportBackup = () => {
     toast.info("Database export feature coming soon")
-    // This would trigger a download of the SQLite file
   }
 
   const isLoading = isLoadingStatus || isLoadingHealth
@@ -96,12 +88,12 @@ export function SettingsPage() {
   const lastCheckTime = status?.uptime_seconds ? new Date().toLocaleString() : "Never"
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+    <>
+      <div className="max-w-6xl space-y-6">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">Settings</h1>
-          <p className="text-slate-600 mt-1">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Settings</h1>
+          <p className="text-muted-foreground mt-1">
             System configuration and status (read-only)
           </p>
         </div>
@@ -115,14 +107,11 @@ export function SettingsPage() {
               refetchStatus()
               refetchHealth()
             }}
-            className="mb-6"
           />
         )}
 
         {/* Loading State */}
-        {isLoading && (
-          <LoadingSkeleton variant="card" count={5} />
-        )}
+        {isLoading && <LoadingSkeleton variant="card" count={5} />}
 
         {/* Main Content */}
         {!isLoading && (
@@ -141,7 +130,7 @@ export function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Status</p>
+                  <p className="text-sm font-medium text-muted-foreground">Status</p>
                   <div className="flex items-center gap-2">
                     {status?.daemon_running ? (
                       <Badge className="bg-green-500">
@@ -158,19 +147,19 @@ export function SettingsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Check Interval</p>
+                  <p className="text-sm font-medium text-muted-foreground">Check Interval</p>
                   <p className="text-lg font-semibold">
                     {status?.check_interval_seconds != null
                       ? `${status.check_interval_seconds} seconds`
                       : "N/A"}
                   </p>
-                  <p className="text-xs text-slate-500">Subscription check interval</p>
+                  <p className="text-xs text-muted-foreground">Subscription check interval</p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Last Check Time</p>
+                  <p className="text-sm font-medium text-muted-foreground">Last Check Time</p>
                   <p className="text-sm">{lastCheckTime}</p>
-                  <p className="text-xs text-slate-500">Auto-refreshed</p>
+                  <p className="text-xs text-muted-foreground">Auto-refreshed</p>
                 </div>
               </div>
 
@@ -200,30 +189,30 @@ export function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-3">
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Curator API URL</p>
-                    <p className="text-sm text-slate-600 font-mono">
+                    <p className="text-sm text-muted-foreground font-mono">
                       {import.meta.env.VITE_CURATOR_API_URL || 'http://localhost:8950'}
                     </p>
                   </div>
                   {getHealthBadge(health?.database_connected)}
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Engram API URL</p>
-                    <p className="text-sm text-slate-600 font-mono">
+                    <p className="text-sm text-muted-foreground font-mono">
                       {import.meta.env.VITE_ENGRAM_API_URL || 'http://localhost:8001'}
                     </p>
                   </div>
                   <Badge variant="outline">Not monitored</Badge>
                 </div>
 
-                <div className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                   <div className="space-y-1">
                     <p className="text-sm font-medium">Transcribe API URL</p>
-                    <p className="text-sm text-slate-600 font-mono">
+                    <p className="text-sm text-muted-foreground font-mono">
                       {import.meta.env.VITE_TRANSCRIBE_API_URL || 'http://localhost:8002'}
                     </p>
                   </div>
@@ -268,28 +257,28 @@ export function SettingsPage() {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">YouTube API</p>
-                    <p className="text-sm text-slate-600">10,000 requests/day</p>
+                    <p className="text-sm text-muted-foreground">10,000 requests/day</p>
                   </div>
                   <Progress value={0} className="h-2" />
-                  <p className="text-xs text-slate-500">Usage tracking not available</p>
+                  <p className="text-xs text-muted-foreground">Usage tracking not available</p>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">RSS Feeds</p>
-                    <p className="text-sm text-slate-600">No limit</p>
+                    <p className="text-sm text-muted-foreground">No limit</p>
                   </div>
                   <Progress value={0} className="h-2" />
-                  <p className="text-xs text-slate-500">No rate limiting applied</p>
+                  <p className="text-xs text-muted-foreground">No rate limiting applied</p>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <p className="text-sm font-medium">Podcast Feeds</p>
-                    <p className="text-sm text-slate-600">No limit</p>
+                    <p className="text-sm text-muted-foreground">No limit</p>
                   </div>
                   <Progress value={0} className="h-2" />
-                  <p className="text-xs text-slate-500">No rate limiting applied</p>
+                  <p className="text-xs text-muted-foreground">No rate limiting applied</p>
                 </div>
               </div>
             </CardContent>
@@ -309,7 +298,7 @@ export function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Connection Status</p>
+                  <p className="text-sm font-medium text-muted-foreground">Connection Status</p>
                   <div className="flex items-center gap-2">
                     {status?.database_connected ? (
                       <Badge className="bg-green-500">
@@ -326,21 +315,21 @@ export function SettingsPage() {
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Total Records</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Records</p>
                   <p className="text-lg font-semibold">{status?.total_items?.toLocaleString() || 0}</p>
-                  <p className="text-xs text-slate-500">Ingested items</p>
+                  <p className="text-xs text-muted-foreground">Ingested items</p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Location</p>
-                  <p className="text-sm font-mono text-slate-600">./data/curator.db</p>
-                  <p className="text-xs text-slate-500">SQLite database</p>
+                  <p className="text-sm font-medium text-muted-foreground">Location</p>
+                  <p className="text-sm font-mono text-muted-foreground">./data/curator.db</p>
+                  <p className="text-xs text-muted-foreground">SQLite database</p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Size</p>
+                  <p className="text-sm font-medium text-muted-foreground">Size</p>
                   <p className="text-sm">Not available</p>
-                  <p className="text-xs text-slate-500">Check filesystem</p>
+                  <p className="text-xs text-muted-foreground">Check filesystem</p>
                 </div>
               </div>
 
@@ -379,31 +368,31 @@ export function SettingsPage() {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Web UI Version</p>
+                  <p className="text-sm font-medium text-muted-foreground">Web UI Version</p>
                   <p className="text-lg font-semibold">1.0.0</p>
-                  <p className="text-xs text-slate-500">Frontend application</p>
+                  <p className="text-xs text-muted-foreground">Frontend application</p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">API Version</p>
+                  <p className="text-sm font-medium text-muted-foreground">API Version</p>
                   <p className="text-lg font-semibold">{status?.version || "Unknown"}</p>
-                  <p className="text-xs text-slate-500">Backend service</p>
+                  <p className="text-xs text-muted-foreground">Backend service</p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">System Uptime</p>
+                  <p className="text-sm font-medium text-muted-foreground">System Uptime</p>
                   <p className="text-lg font-semibold">{formatUptime(status?.uptime_seconds)}</p>
-                  <p className="text-xs text-slate-500">Time since API started</p>
+                  <p className="text-xs text-muted-foreground">Time since API started</p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-sm font-medium text-slate-600">Active Subscriptions</p>
+                  <p className="text-sm font-medium text-muted-foreground">Active Subscriptions</p>
                   <p className="text-lg font-semibold">{status?.enabled_subscriptions || 0}</p>
-                  <p className="text-xs text-slate-500">of {status?.total_subscriptions || 0} total</p>
+                  <p className="text-xs text-muted-foreground">of {status?.total_subscriptions || 0} total</p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-2 pt-4 border-t">
+              <div className="flex flex-wrap gap-2 pt-4 border-t border-border">
                 <Button
                   variant="outline"
                   className="gap-2"
@@ -437,7 +426,7 @@ export function SettingsPage() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
-            <div className="bg-slate-900 text-slate-50 p-4 rounded-lg font-mono text-sm overflow-x-auto">
+            <div className="bg-primary text-primary-foreground p-4 rounded-lg font-mono text-sm overflow-x-auto">
               <pre>{`-- subscriptions table
 CREATE TABLE subscriptions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -475,6 +464,6 @@ CREATE TABLE ingested_items (
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </>
   )
 }

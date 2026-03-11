@@ -224,12 +224,12 @@ export function IngestedPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="space-y-6">
         {/* Header */}
-        <div className="mb-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">Ingested Items</h1>
-            <p className="text-sm sm:text-base text-slate-600 mt-1">View and manage ingested content</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Ingested Items</h1>
+            <p className="text-sm sm:text-base text-muted-foreground mt-1">View and manage ingested content</p>
           </div>
           <Button
             onClick={handleExportCSV}
@@ -243,7 +243,7 @@ export function IngestedPage() {
         </div>
 
         {/* Statistics Banner */}
-        <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <Card>
             <CardContent className="pt-6">
               <div className="text-2xl font-bold">{formatNumber(statistics.total)}</div>
@@ -271,7 +271,7 @@ export function IngestedPage() {
         </div>
 
         {/* Filters and Search */}
-        <div className="mb-6 space-y-4">
+        <div className="space-y-4">
           <div className="flex flex-col sm:flex-row gap-4">
             {/* Subscription Filter */}
             <Select value={subscriptionFilter} onValueChange={setSubscriptionFilter}>
@@ -356,7 +356,7 @@ export function IngestedPage() {
 
         {/* Results Count */}
         {!isLoading && sortedItems.length > 0 && (
-          <div className="mb-4 text-sm text-muted-foreground">
+          <div className="text-sm text-muted-foreground">
             Showing {(currentPage - 1) * ITEMS_PER_PAGE + 1}-
             {Math.min(currentPage * ITEMS_PER_PAGE, sortedItems.length)} of {formatNumber(sortedItems.length)} items
           </div>
@@ -369,7 +369,7 @@ export function IngestedPage() {
             message="Unable to fetch ingested items. Please try again."
             error={error}
             onRetry={() => refetch()}
-            className="mb-6"
+
           />
         )}
 
