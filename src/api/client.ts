@@ -67,7 +67,7 @@ export class CuratorClient {
     this.baseUrl =
       config.baseUrl ||
       import.meta.env.VITE_CURATOR_API_URL ||
-      'http://localhost:8950'
+      ''
     this.apiKey = config.apiKey || import.meta.env.VITE_CURATOR_API_KEY
   }
 
