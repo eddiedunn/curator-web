@@ -75,7 +75,7 @@ export function DashboardPage() {
           {/* Quick Actions - Touch-friendly on mobile */}
           <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={handleRefresh}
               disabled={isRefreshing}
@@ -87,7 +87,7 @@ export function DashboardPage() {
               <span className="hidden xs:inline">Refresh</span>
             </Button>
             <Button
-              variant="outline"
+              variant="secondary"
               size="sm"
               onClick={handleManualIngest}
               className="gap-2 min-h-[44px] flex-1 sm:flex-none"
